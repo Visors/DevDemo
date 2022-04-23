@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor.SceneTemplate;
 using UnityEngine;
 
-public class GameObjectPool : ScriptableObject
+public class GameObjectPool : MonoBehaviour
 {
     public int InitSize { get; set; }
     public int MaxSize { get; set; }
@@ -40,6 +40,7 @@ public class GameObjectPool : ScriptableObject
 
         GameObject ret = _pool.Pop();
         ret.SetActive(true);
+        Debug.Log("Get() " + ret.GetInstanceID());
         return ret;
     }
 
@@ -53,5 +54,10 @@ public class GameObjectPool : ScriptableObject
 
         go.SetActive(false);
         _pool.Push(go);
+    }
+
+    private void Awake()
+    {
+        _pool = new Stack<GameObject>();
     }
 }

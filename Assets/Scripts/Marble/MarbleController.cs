@@ -6,7 +6,8 @@ using Random = UnityEngine.Random;
 
 namespace Marble
 {
-    public class MarbleController : MonoBehaviourSingletonPersistent<MarbleController>
+    [RequireComponent(typeof(GameObjectPool))]
+    public class MarbleController : MonoBehaviourSingleton<MarbleController>
     {
         [Header("Marble")] [SerializeField] private GameObject marblePrefab;
 
@@ -25,42 +26,25 @@ namespace Marble
         [Header("Marble Spawner")] [SerializeField]
         private bool startSpawner;
 
-        private MarbleSpawner _marbleSpawner;
-
         [SerializeField, Range(0f, 10f)] private float spawnInterval = 2f;
 
         [Header("Marble Mover")] [SerializeField, Range(0f, 10f)]
         private float marbleSpeed = 2f;
 
-        class MarbleSpawner : MonoBehaviourSingleton<MarbleSpawner>
+        private Vector3 RandomInitDirection()
         {
-            private MarbleController _marbleController = MarbleController.Instance;
+            var ret = new Vector3(Random.Range(0, 2) == 0 ? -1 : 1, Random.Range(-1f, 1f), 0);
+            return ret;
+        }
 
-            private Vector3 RandomInitDirection()
-            {
-                var direction2D = Random.insideUnitCircle;
-                var ret = new Vector3(direction2D.x, direction2D.y, 0);
-                return ret;
-            }
-
-            private void Spawn()
-            {
-                if (!_marbleController.startSpawner) return;
-                var marble = _marbleController._pool.Get();
-                _marbleController._marbleToSpeed[marble] = RandomInitDirection() * _marbleController.marbleSpeed;
-                marble.GetComponent<Rigidbody>().velocity = _marbleController._marbleToSpeed[marble];
-                _marbleController.marbles.Add(marble);
-            }
-
-            private void Awake()
-            {
-                Debug.Log("Marble Spawner awake.");
-            }
-
-            private void Start()
-            {
-                InvokeRepeating(nameof(Spawn), 0, 2f);
-            }
+        private void Spawn()
+        {
+            if (!startSpawner) return;
+            var marble = _pool.Get();
+            Debug.Log("Spawn " + marble.GetInstanceID());
+            _marbleToSpeed[marble] = RandomInitDirection() * marbleSpeed;
+            marble.GetComponent<Rigidbody>().velocity = _marbleToSpeed[marble];
+            marbles.Add(marble);
         }
 
         class MarbleMover : MonoBehaviourSingleton<MarbleMover>
@@ -70,20 +54,21 @@ namespace Marble
 
         private void Awake()
         {
-            _pool = ScriptableObject.CreateInstance<GameObjectPool>();
+            _marbleToSpeed = new Dictionary<GameObject, Vector3>();
+            _pool = GetComponent<GameObjectPool>();
             _pool.InitSize = initPoolSize;
             _pool.MaxSize = maxPoolSize;
             _pool.Prefab = marblePrefab;
-            Debug.Log(_pool);
+            _pool.Warm();
         }
 
         private void Start()
         {
+            InvokeRepeating(nameof(Spawn), 0, spawnInterval);
         }
 
         private void Update()
         {
-            if (startSpawner && _marbleSpawner == null) _marbleSpawner = MarbleSpawner.Instance;
         }
     }
 }
