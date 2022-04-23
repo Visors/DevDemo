@@ -88,53 +88,53 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
 
     private void StartTouch(InputAction.CallbackContext context)
     {
-        Debug.Log("Touch started " + _inputControls.Touch.TouchPosition.ReadValue<Vector2>());
+        // Debug.Log("Touch started " + _inputControls.Touch.TouchPosition.ReadValue<Vector2>());
         OnStartTouch?.Invoke(_inputControls.Touch.TouchPosition.ReadValue<Vector2>(), (float) context.startTime);
     }
 
     private void PerformTouch(InputAction.CallbackContext context)
     {
-        Debug.Log("Touch performed " + _inputControls.Touch.TouchPosition.ReadValue<Vector2>());
+        // Debug.Log("Touch performed " + _inputControls.Touch.TouchPosition.ReadValue<Vector2>());
         OnPerformTouch?.Invoke(_inputControls.Touch.TouchPosition.ReadValue<Vector2>(), (float) context.time);
     }
 
     private void EndTouch(InputAction.CallbackContext context)
     {
-        Debug.Log("Touch ended");
+        // Debug.Log("Touch ended");
         OnEndTouch?.Invoke(_inputControls.Touch.TouchPosition.ReadValue<Vector2>(), (float) context.time);
     }
 
     private void FingerDown(Finger finger)
     {
-        Debug.Log(Touch.activeTouches);
+        // Debug.Log(Touch.activeTouches);
         OnStartTouch?.Invoke(finger.screenPosition, Time.time);
     }
 
     private void StartLeftAxis(InputAction.CallbackContext context)
     {
         _onStayLeftAxis = true;
-        Debug.Log("Left Axis started " + context);
+        // Debug.Log("Left Axis started " + context);
         OnStartLeftAxis?.Invoke(_inputControls.Keyboard.LeftAxis.ReadValue<float>(), (float) context.startTime);
     }
 
     private void StartRightAxis(InputAction.CallbackContext context)
     {
         _onStayRightAxis = true;
-        Debug.Log("Right Axis started " + context);
+        // Debug.Log("Right Axis started " + context);
         OnStartRightAxis?.Invoke(_inputControls.Keyboard.RightAxis.ReadValue<float>(), (float) context.startTime);
     }
 
     private void EndLeftAxis(InputAction.CallbackContext context)
     {
         _onStayLeftAxis = false;
-        Debug.Log("Left Axis ended " + context);
+        // Debug.Log("Left Axis ended " + context);
         OnEndLeftAxis?.Invoke(_inputControls.Keyboard.LeftAxis.ReadValue<float>(), (float) context.time);
     }
 
     private void EndRightAxis(InputAction.CallbackContext context)
     {
         _onStayRightAxis = false;
-        Debug.Log("Right Axis ended " + context);
+        // Debug.Log("Right Axis ended " + context);
         OnEndRightAxis?.Invoke(_inputControls.Keyboard.RightAxis.ReadValue<float>(), (float) context.time);
     }
 

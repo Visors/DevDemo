@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using UnityEditor.SceneTemplate;
 using UnityEngine;
 
-public class GameObjectPool : UnityEngine.Object
+public class GameObjectPool : ScriptableObject
 {
-    private int InitSize { get; set; }
-    private int MaxSize { get; set; }
-    private GameObject Prefab { get; set; }
+    public int InitSize { get; set; }
+    public int MaxSize { get; set; }
+    public GameObject Prefab { get; set; }
     private Stack<GameObject> _pool;
 
     public GameObjectPool(int initSize, int maxSize, GameObject prefab)
