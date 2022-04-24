@@ -9,7 +9,7 @@ public class GameObjectPool : MonoBehaviour
     public int InitSize { get; set; }
     public int MaxSize { get; set; }
     public GameObject Prefab { get; set; }
-    private Stack<GameObject> _pool;
+    private Queue<GameObject> _pool;
 
     public GameObjectPool(int initSize, int maxSize, GameObject prefab)
     {
@@ -25,7 +25,7 @@ public class GameObjectPool : MonoBehaviour
         for (int i = 0; i < InitSize; i++)
         {
             GameObject tmp = Instantiate(Prefab);
-            _pool.Push(tmp);
+            _pool.Enqueue(tmp);
             tmp.SetActive(false);
         }
     }
@@ -38,8 +38,9 @@ public class GameObjectPool : MonoBehaviour
             return tmp;
         }
 
-        GameObject ret = _pool.Pop();
+        GameObject ret = _pool.Dequeue();
         ret.SetActive(true);
+        // ret.GetComponent<Rigidbody>().WakeUp();
         Debug.Log("Get() " + ret.GetInstanceID());
         return ret;
     }
@@ -52,12 +53,16 @@ public class GameObjectPool : MonoBehaviour
             return;
         }
 
+        var rigidbody = go.GetComponent<Rigidbody>();
+        rigidbody.Sleep();
+        rigidbody.position = Vector3.zero;
+        go.transform.position = Vector3.zero;
         go.SetActive(false);
-        _pool.Push(go);
+        _pool.Enqueue(go);
     }
 
     private void Awake()
     {
-        _pool = new Stack<GameObject>();
+        _pool = new Queue<GameObject>();
     }
 }

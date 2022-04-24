@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Utils;
 using Random = UnityEngine.Random;
 
 namespace Marble
@@ -31,7 +32,11 @@ namespace Marble
         [Header("Marble Mover")] [SerializeField, Range(0f, 10f)]
         private float marbleSpeed = 2f;
 
-        private Vector3 RandomInitDirection()
+        [Header("Others")] [SerializeField, Range(0f, 0.0001f)]
+        private double TOLERANCE = 0.000001f;
+
+
+        private static Vector3 RandomInitDirection()
         {
             var ret = new Vector3(Random.Range(0, 2) == 0 ? -1 : 1, Random.Range(-1f, 1f), 0);
             return ret;
@@ -47,10 +52,10 @@ namespace Marble
             marbles.Add(marble);
         }
 
-        class MarbleMover : MonoBehaviourSingleton<MarbleMover>
-        {
-            private MarbleController _marbleController = MarbleController.Instance;
-        }
+        // class MarbleMover : MonoBehaviourSingleton<MarbleMover>
+        // {
+        //     private MarbleController _marbleController = MarbleController.Instance;
+        // }
 
         private void Awake()
         {
@@ -69,6 +74,23 @@ namespace Marble
 
         private void Update()
         {
+        }
+
+        private void FixedUpdate()
+        {
+            for (int i = 0; i < marbles.Count; i++)
+            {
+                var pos = marbles[i].transform.position;
+                if (!marbleLifeArea.Contains(pos) ||
+                    Math.Abs(Mathf.Abs(marbles[i].GetComponent<Rigidbody>().velocity.x) - marbleSpeed) > TOLERANCE)
+                {
+                    GameObject tmp = marbles[i];
+                    marbles.RemoveAt(i);
+                    Debug.Log("Remove");
+                    var i1 = i;
+                    StartCoroutine(InvokeUtils.DelayInvoke(() => { _pool.Release(tmp); }, 1f));
+                }
+            }
         }
     }
 }
