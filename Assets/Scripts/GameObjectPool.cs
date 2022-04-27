@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Events;
 using UnityEditor.SceneTemplate;
 using UnityEngine;
 
+[DefaultExecutionOrder(-1)]
 public class GameObjectPool : MonoBehaviour
 {
     public int InitSize { get; set; }
@@ -41,7 +43,7 @@ public class GameObjectPool : MonoBehaviour
         GameObject ret = _pool.Dequeue();
         ret.SetActive(true);
         // ret.GetComponent<Rigidbody>().WakeUp();
-        Debug.Log("Get() " + ret.GetInstanceID());
+        // Debug.Log("Get() " + ret.GetInstanceID());
         return ret;
     }
 
